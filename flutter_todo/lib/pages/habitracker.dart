@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/components/heatmap.dart';
 import '../components/habit_tile.dart';
 
 class HabitTracker extends StatefulWidget {
@@ -27,7 +28,11 @@ class _HabitTrackerState extends State<HabitTracker> {
                 ),
               ),
             ),
-            Expanded( // 👈 bunu ekle, ana fark bu
+             SizedBox(
+              height: 220, // ihtiyaca göre değiştir
+              child: MyHeatMap(),
+            ),
+            Expanded(
               child: HabitTile(),
             ),
           ],

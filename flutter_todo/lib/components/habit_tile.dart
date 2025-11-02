@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class HabitTile extends StatefulWidget {
   const HabitTile({super.key});
 
@@ -8,6 +9,7 @@ class HabitTile extends StatefulWidget {
 }
 
 class _HabitTileState extends State<HabitTile> {
+  Map<int, bool> checkedStates = {};
   late final TextEditingController _habitController;
   List <String> habits = [];
 
@@ -15,6 +17,7 @@ class _HabitTileState extends State<HabitTile> {
     if (_habitController.text.isNotEmpty){
       setState((){
         habits.add( _habitController.text);
+        checkedStates[habits.length - 1] = false;
         _habitController.clear();
       });FocusScope.of(context).unfocus();
     }
@@ -23,6 +26,11 @@ class _HabitTileState extends State<HabitTile> {
   void _deleteHabit(int index){
     setState((){
       habits.removeAt(index);
+      checkedStates.remove(index);
+      final newCheckedStates = <int, bool> {};
+      for(var i= 0; i < habits.length; i++){
+        newCheckedStates[i] = checkedStates[i+1] ?? false;
+      }
     });
   }
 
@@ -46,14 +54,29 @@ class _HabitTileState extends State<HabitTile> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            children: [
+            children: [           
               Expanded(
                 child: TextField(
                   controller: _habitController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Enter your habit',
-                  ),
+                  decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color.fromARGB(251, 243, 200, 195), 
+                      labelText: 'Enter your habit', 
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0), 
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 255, 221, 221),
+                          width: 4.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0), 
+                        borderSide: const BorderSide(
+                          color: Color(0xFFFFAA9A),
+                          width: 4.0,
+                        ),
+                      ),
+                    ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -74,13 +97,27 @@ class _HabitTileState extends State<HabitTile> {
               onDoubleTap: () => _deleteHabit(index),
               child: Card(
                 margin: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(  habits[index]),
-                  trailing: IconButton(
-                      icon: const Icon(Icons.delete,
-                      color: Color(0xFFFFAA9A)),
-                      onPressed: () => _deleteHabit(index),
-                  ),                 
+                child: Row(
+                  children: [  
+                    Checkbox(
+                      value: checkedStates[index] ?? false,
+                      onChanged:(bool? value){
+                        setState((){
+                          checkedStates[index] = value ?? false;
+                        });
+                      }
+                    ),                 
+                    Expanded(
+                      child: ListTile(
+                        title: Text(  habits[index]),
+                        trailing: IconButton(
+                            icon: const Icon(Icons.delete,
+                            color: Color(0xFFFFAA9A)),
+                            onPressed: () => _deleteHabit(index),
+                        ),                 
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
